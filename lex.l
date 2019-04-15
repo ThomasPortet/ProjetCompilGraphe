@@ -1,6 +1,7 @@
 D                       [0-9]
 L                       [a-zA-Z_]
 H                       [a-fA-F0-9]
+C                       "/*"((\*+[^/*])|([^*]))*\**"*/"
 
 %{
 #include <stdio.h>
@@ -49,6 +50,7 @@ H                       [a-fA-F0-9]
 "<"                     { return LT; }
 ">"                     { return GT; }
 
+{C}                     {  }
 [ \t\v\n\f]             {  }
 .                       { return yytext[0]; }
 %%

@@ -118,7 +118,7 @@ condition	:
 		NOT '(' condition ')'
 	|	condition binary_rel condition %prec REL
 	|	'(' condition ')'
-	|	expression binary_comp expression { printf("Condition - Comparaison!\n"); }
+	|	expression binary_comp expression
 ;
 binary_op	:	
 		PLUS
@@ -135,12 +135,12 @@ binary_rel	:
 	|	LOR
 ;
 binary_comp	:	
-		LT { printf("<\n"); }
-	|	GT { printf(">\n"); }
-	|	GEQ { printf("<=\n"); }
-	|	LEQ { printf(">=\n"); }
-	|	EQ { printf("==\n"); }
-	|	NEQ { printf("!=\n"); }
+		LT
+	|	GT
+	|	GEQ
+	|	LEQ
+	|	EQ
+	|	NEQ
 ;
 %%
 
