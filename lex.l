@@ -7,7 +7,7 @@ IS                      (u|U|l|L)*
 
 %{
 #include <stdio.h>
-#include "y.tab.h"
+//#include "y.tab.h"
 
 
 /* Ne gère pas les commentaires. A rajouter */
@@ -88,4 +88,6 @@ L?\"(\\.|[^\\"])*\"     { /* A completer */ }
 [ \t\v\n\f]             { /* A completer */ }
 .                       { return yytext[0]; }
 %%
+
+yywrap() {}
 
