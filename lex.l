@@ -32,7 +32,7 @@ IS                      (u|U|l|L)*
 "for"                   { /* A completer */ }
 "goto"                  { /* A completer */ }
 "if"                    { /* A completer */ }
-"int"                   { /* A completer */ }
+"int"                   { printf("Un int!\n"); }
 "long"                  { /* A completer */ }
 "register"              { /* A completer */ }
 "return"                { /* A completer */ }
@@ -92,7 +92,9 @@ L?\"(\\.|[^\\"])*\"     { /* A completer */ }
 yywrap() {}
 
 int main() {
+	printf("Hello!\n");
 	yylex();
+	printf("Goodbye!\n");
 	return 0;
 }
 
