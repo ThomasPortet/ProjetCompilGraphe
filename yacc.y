@@ -35,7 +35,7 @@ liste_declarateurs	:
 	|	declarateur
 ;
 declarateur	:	
-		IDENTIFICATEUR { printf("Déclaration!\n"); }
+		IDENTIFICATEUR { printf("Declarateur - Identificateur!\n"); }
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
@@ -70,8 +70,8 @@ instruction	:
 	|	appel
 ;
 iteration	:	
-		FOR '(' affectation ';' condition ';' affectation ')' instruction
-	|	WHILE '(' condition ')' instruction
+		FOR '(' affectation ';' condition ';' affectation ')' instruction { printf("For!\n"); }
+	|	WHILE '(' condition ')' instruction { printf("While!\n"); }
 ;
 selection	:	
 		IF '(' condition ')' instruction %prec THEN
@@ -95,15 +95,15 @@ appel	:
 		IDENTIFICATEUR '(' liste_expressions ')' ';' { printf("Appel de fonction!\n"); }
 ;
 variable	:	
-		IDENTIFICATEUR
+		IDENTIFICATEUR { printf("Variable - Identificateur!\n"); }
 	|	variable '[' expression ']'
 ;
 expression	:	
 		'(' expression ')'
-	|	expression binary_op expression %prec OP
+	|	expression binary_op expression %prec OP { printf("Expression - Operateur binaire!\n"); }
 	|	MOINS expression
-	|	CONSTANTE
-	|	variable
+	|	CONSTANTE { printf("Expression - Constante!\n"); }
+	|	variable { printf("Expression - Variable!\n"); }
 	|	IDENTIFICATEUR '(' liste_expressions ')'
 ;
 liste_expressions	:	
@@ -118,7 +118,7 @@ condition	:
 		NOT '(' condition ')'
 	|	condition binary_rel condition %prec REL
 	|	'(' condition ')'
-	|	expression binary_comp expression
+	|	expression binary_comp expression { printf("Condition - Comparaison!\n"); }
 ;
 binary_op	:	
 		PLUS
@@ -135,12 +135,12 @@ binary_rel	:
 	|	LOR
 ;
 binary_comp	:	
-		LT
-	|	GT
-	|	GEQ
-	|	LEQ
-	|	EQ
-	|	NEQ
+		LT { printf("<\n"); }
+	|	GT { printf(">\n"); }
+	|	GEQ { printf("<=\n"); }
+	|	LEQ { printf(">=\n"); }
+	|	EQ { printf("==\n"); }
+	|	NEQ { printf("!=\n"); }
 ;
 %%
 

@@ -45,6 +45,9 @@ H                       [a-fA-F0-9]
 "/"                     { return DIV; }
 "&"                     { return BAND; }
 "|"                     { return BOR; }
+"!"                     { return NOT; }
+"<"                     { return LT; }
+">"                     { return GT; }
 
 [ \t\v\n\f]             {  }
 .                       { return yytext[0]; }
