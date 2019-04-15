@@ -1,2 +1,2 @@
 lex lex.l
-gcc -o lex.yy.o -lfl lex.yy.c
+gcc -o executable -lfl lex.yy.c
