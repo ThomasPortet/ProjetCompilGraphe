@@ -1,4 +1,6 @@
 %{
+#include <stdio.h>
+#include <stdlib.h>
 %}
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
 %token BREAK RETURN PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
@@ -133,3 +135,13 @@ binary_comp	:
 	|	NEQ
 ;
 %%
+
+yywrap() {}
+
+int yyerror(char* s) {
+	fprintf(stderr, "%s\n", s);
+}
+
+int main() {
+	return yyparse();
+}

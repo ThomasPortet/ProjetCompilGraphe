@@ -1,2 +1,3 @@
 lex lex.l
-gcc -o executable lex.yy.c
+yacc -d yacc.y
+gcc -o executable y.tab.c lex.yy.c -ll

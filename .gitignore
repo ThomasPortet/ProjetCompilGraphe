@@ -1,4 +1,5 @@
 *.o
 *.yy*
 executable
+y.tab.*
 
