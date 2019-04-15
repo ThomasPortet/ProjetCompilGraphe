@@ -17,7 +17,7 @@
 %start programme
 %%
 programme	:	
-		liste_declarations liste_fonctions
+		liste_declarations liste_fonctions { printf("Programme!\n"); }
 ;
 liste_declarations	:	
 		liste_declarations declaration 
@@ -35,20 +35,24 @@ liste_declarateurs	:
 	|	declarateur
 ;
 declarateur	:	
-		IDENTIFICATEUR
+		IDENTIFICATEUR { printf("Déclaration!\n"); }
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
-	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
+		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { printf("Fonction!\n"); }
+	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' { printf("Fonction externe!\n"); }
 ;
 type	:	
 		VOID
 	|	INT
 ;
 liste_parms	:	
-		liste_parms ',' parm
+		liste_parms_interne
 	|	
+;
+liste_parms_interne	:
+		liste_parms_interne ',' parm
+	|	parm
 ;
 parm	:	
 		INT IDENTIFICATEUR
@@ -82,13 +86,13 @@ saut	:
 	|	RETURN expression ';'
 ;
 affectation	:	
-		variable '=' expression
+		variable '=' expression { printf("Affectation!\n"); }
 ;
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
 ;
 appel	:	
-		IDENTIFICATEUR '(' liste_expressions ')' ';'
+		IDENTIFICATEUR '(' liste_expressions ')' ';' { printf("Appel de fonction!\n"); }
 ;
 variable	:	
 		IDENTIFICATEUR
@@ -103,8 +107,12 @@ expression	:
 	|	IDENTIFICATEUR '(' liste_expressions ')'
 ;
 liste_expressions	:	
-		liste_expressions ',' expression
+		liste_expressions_interne
 	|
+;
+liste_expressions_interne	:	
+		liste_expressions_interne ',' expression
+	|	expression
 ;
 condition	:	
 		NOT '(' condition ')'
