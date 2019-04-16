@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut
 %type <nom> type
 
 %start programme
@@ -91,7 +91,7 @@ liste_instructions :
 instruction	:	
 		iteration { $$ = makenode(""); }
 	|	selection { $$ = makenode(""); }
-	|	saut { $$ = makenode(""); }
+	|	saut { $$ = $1; }
 	|	affectation ';' { $$ = $1; }
 	|	bloc { $$ = $1; }
 	|	appel { $$ = makenode(""); }
@@ -108,9 +108,12 @@ selection	:
 	|	DEFAULT ':' instruction
 ;
 saut	:	
-		BREAK ';'
-	|	RETURN ';'
-	|	RETURN expression ';'
+		BREAK ';' { $$ = makenode("[label=\"BREAK\" shape=box]"); }
+	|	RETURN ';' { $$ = makenode("[label=\"RETURN\" shape=trapezium color=blue]"); }
+	|	RETURN expression ';' {
+$$ = makenode("[label=\"RETURN\" shape=trapezium color=blue]");
+$$->child = $2;
+}
 ;
 affectation	:	
 		variable '=' expression{
@@ -132,8 +135,11 @@ appel	:
 		IDENTIFICATEUR '(' liste_expressions ')' ';' 
 ;
 variable	:	
-		IDENTIFICATEUR {char* buffer = NULL;
-asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer); }
+		IDENTIFICATEUR {
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\"]", $1);
+$$ = makenode(buffer);
+}
 	|	variable '[' expression ']' { $$ = makenode(""); }
 ;
 expression	:	
