@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection
 %type <nom> type
 
 %start programme
@@ -90,7 +90,7 @@ liste_instructions :
 ;
 instruction	:	
 		iteration { $$ = makenode(""); }
-	|	selection { $$ = makenode(""); }
+	|	selection { $$ = $1; }
 	|	saut { $$ = $1; }
 	|	affectation ';' { $$ = $1; }
 	|	bloc { $$ = $1; }
@@ -101,11 +101,20 @@ iteration	:
 	|	WHILE '(' condition ')' instruction
 ;
 selection	:	
-		IF '(' condition ')' instruction %prec THEN
-	|	IF '(' condition ')' instruction ELSE instruction
-	|	SWITCH '(' expression ')' instruction
-	|	CASE CONSTANTE ':' instruction
-	|	DEFAULT ':' instruction
+		IF '(' condition ')' instruction %prec THEN {
+$$ = makenode("[label=\"IF\" shape=diamond]");
+$3->right = $5;
+$$->child = $3;
+}
+	|	IF '(' condition ')' instruction ELSE instruction {
+$$ = makenode("[label=\"IF\" shape=diamond]");
+$3->right = $5;
+$5->right = $7;
+$$->child = $3;
+}
+	|	SWITCH '(' expression ')' instruction { $$ = makenode(""); }
+	|	CASE CONSTANTE ':' instruction { $$ = makenode(""); }
+	|	DEFAULT ':' instruction { $$ = makenode(""); }
 ;
 saut	:	
 		BREAK ';' { $$ = makenode("[label=\"BREAK\" shape=box]"); }
@@ -117,7 +126,7 @@ $$->child = $2;
 ;
 affectation	:	
 		variable '=' expression{
-        node_t* node_affect = makenode("[label=\":=\" shape=ellipse]");
+        node_t* node_affect = makenode("[label=\":=\"]");
         node_t* node_var = $1;
         node_affect->child=node_var;
         node_var->right=$3;
@@ -161,7 +170,12 @@ expression	:
 	|	CONSTANTE {char* buffer = NULL;
         asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer);  }
 	|	variable { $$ = $1; }
-	|	IDENTIFICATEUR '(' liste_expressions ')' { $$ = makenode(""); }
+	|	IDENTIFICATEUR '(' liste_expressions ')' {
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\" shape=septagon]", $1);
+$$ = makenode(buffer);
+$$->child = reverse($3);
+}
 ;
 liste_expressions	:	
 		liste_expressions_interne { $$ = $1; }
@@ -172,10 +186,10 @@ liste_expressions_interne	:
 	|	expression { $$ = $1; }
 ;
 condition	:	
-		NOT '(' condition ')'
-	|	condition binary_rel condition %prec REL
-	|	'(' condition ')'
-	|	expression binary_comp expression
+		NOT '(' condition ')' { $$ = makenode(""); }
+	|	condition binary_rel condition %prec REL { $$ = makenode(""); }
+	|	'(' condition ')' { $$ = $2; }
+	|	expression binary_comp expression { $$ = makenode(""); }
 ;
 binary_op	:	
 		PLUS {node_t* node = makenode("[label= \"+\"]");$$=node;}
