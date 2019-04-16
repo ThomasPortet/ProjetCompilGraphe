@@ -144,7 +144,7 @@ binary_comp	:
 ;
 %%
 
-yywrap() {}
+int yywrap() {}
 
 int yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
