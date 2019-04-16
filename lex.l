@@ -30,7 +30,7 @@ C                       "/*"((\*+[^/*])|([^*]))*\**"*/"
 
 {L}({L}|{D})*           { yylval.nom = strdup(yytext); return IDENTIFICATEUR; }
 
-{D}+                    { return CONSTANTE; }
+{D}+                    { yylval.nom = strdup(yytext); return CONSTANTE; }
 
 ">>"                    { return RSHIFT; }
 "<<"                    { return LSHIFT; }

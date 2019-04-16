@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc
+%type <node> fonction liste_instructions instruction bloc expression affectation variable
 %type <nom> type
 
 %start programme
@@ -92,7 +92,7 @@ instruction	:
 		iteration { $$ = makenode(""); }
 	|	selection { $$ = makenode(""); }
 	|	saut { $$ = makenode(""); }
-	|	affectation ';' { $$ = makenode(""); }
+	|	affectation ';' { $$ = $1; }
 	|	bloc { $$ = $1; }
 	|	appel { $$ = makenode(""); }
 ;
@@ -113,7 +113,13 @@ saut	:
 	|	RETURN expression ';'
 ;
 affectation	:	
-		variable '=' expression
+		variable '=' expression{
+        node_t* node_affect = makenode("[label=\":=\" shape=ellipse]");
+        node_t* node_var = $1;
+        node_affect->child=node_var;
+        node_var->right=$3;
+        $$=node_affect;
+        }
 ;
 bloc	:	
 		'{' liste_declarations liste_instructions '}' {
@@ -123,19 +129,21 @@ $$ = node;
 }
 ;
 appel	:	
-		IDENTIFICATEUR '(' liste_expressions ')' ';'
+		IDENTIFICATEUR '(' liste_expressions ')' ';' 
 ;
 variable	:	
-		IDENTIFICATEUR
-	|	variable '[' expression ']'
+		IDENTIFICATEUR {char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer); }
+	|	variable '[' expression ']' { $$ = makenode(""); }
 ;
 expression	:	
-		'(' expression ')'
-	|	expression binary_op expression %prec OP
-	|	MOINS expression
-	|	CONSTANTE
-	|	variable
-	|	IDENTIFICATEUR '(' liste_expressions ')'
+		'(' expression ')' { $$ = makenode(""); }
+	|	expression binary_op expression %prec OP { $$ = makenode(""); }
+	|	MOINS expression  { $$ = makenode(""); }
+	|	CONSTANTE {char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer);  }
+	|	variable { $$ = makenode(""); }
+	|	IDENTIFICATEUR '(' liste_expressions ')' { $$ = makenode(""); }
 ;
 liste_expressions	:	
 		liste_expressions_interne
