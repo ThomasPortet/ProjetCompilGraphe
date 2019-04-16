@@ -9,3 +9,4 @@ int nextlabel();
 
 node_t* makenode(char* carac);
 void freenode(node_t* node);
+void printnode(node_t* node);

@@ -48,9 +48,7 @@ declarateur	:
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' {
-printf("%d [label=\"func, void\" shape=invtrapezium color=blue];\n", nextlabel());
-}
+		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
 ;
 type	:	
@@ -171,6 +169,7 @@ node_t* makenode(char* carac) {
 	node_t *node;
 	node = (node_t*) malloc(sizeof(node_t));
 	node->label = nextlabel();
+	node->carac = carac;
 	return node;
 }
 
@@ -181,12 +180,31 @@ void freenode(node_t* node) {
 	free(node);
 }
 
+void printnode(node_t* node) {
+	if (node == NULL) return;
+	printf("%d %s\n", node->label, node->carac);
+	for (node_t* n = node->child; n != NULL; n = n->right) {
+		printnode(n);
+		printf("%d -> %d\n", node->label, n->label);
+	}
+}
+
 int main() {
 	int res = yyparse();
 	if (res != 0) return res;
 	
+	node_t* a = makenode("");
+	node_t* b = makenode("");
+	node_t* c = makenode("");
+	node_t* d = makenode("");
+	a->child = b;
+	b->child = d;
+	b->right = c;
+
 	printf("digraph generated {\n");
+	printnode(a);
 	printf("}\n");
+	freenode(a);
 
 	return res;
 }
