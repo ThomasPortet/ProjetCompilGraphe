@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op
 %type <nom> type
 
 %start programme
@@ -138,7 +138,12 @@ asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer); }
 ;
 expression	:	
 		'(' expression ')' { $$ = makenode(""); }
-	|	expression binary_op expression %prec OP { $$ = makenode(""); }
+	|	expression binary_op expression %prec OP {
+    node_t* node_b = $2; 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
 	|	MOINS expression  { node_t* node_minus = makenode("[label= \"-\"]");
         node_minus->child=$2;
         $$ = node_minus; }
@@ -162,14 +167,14 @@ condition	:
 	|	expression binary_comp expression
 ;
 binary_op	:	
-		PLUS
-	|       MOINS
-	|	MUL
-	|	DIV
-	|       LSHIFT
-	|       RSHIFT
-	|	BAND
-	|	BOR
+		PLUS {node_t* node = makenode("[label= \"+\"]");$$=node;}
+	|   MOINS {node_t* node  = makenode("[label= \"-\"]");$$=node;}
+	|	MUL {node_t* node  = makenode("[label= \"*\"]");$$=node;}
+	|	DIV {node_t* node  = makenode("[label= \"/\"]");$$=node;}
+	|   LSHIFT {node_t* node  = makenode("[label= \"<<\"]");$$=node;}
+	|   RSHIFT {node_t* node  = makenode("[label= \">>\"]");$$=node;}
+	|	BAND {node_t* node  = makenode("[label= \"&&\"]");$$=node;}
+	|	BOR {node_t* node  = makenode("[label= \"||\"]");$$=node;}
 ;
 binary_rel	:	
 		LAND
