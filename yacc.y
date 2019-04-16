@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration binary_rel binary_comp
 %type <nom> type
 
 %start programme
@@ -196,32 +196,32 @@ liste_expressions_interne	:
 	|	expression { $$ = $1; }
 ;
 condition	:	
-		NOT '(' condition ')' { $$ = makenode(""); }
-	|	condition binary_rel condition %prec REL { $$ = makenode(""); }
+		NOT '(' condition ')' { $$ = makenode("[label=\"!\"]"); $$->child = $3; }
+	|	condition binary_rel condition %prec REL { $1->right = $3; $2->child = $1; $$ = $2; }
 	|	'(' condition ')' { $$ = $2; }
-	|	expression binary_comp expression { $$ = makenode(""); }
+	|	expression binary_comp expression { $1->right = $3; $2->child = $1; $$ = $2; }
 ;
 binary_op	:	
-		PLUS {node_t* node = makenode("[label= \"+\"]");$$=node;}
-	|   MOINS {node_t* node  = makenode("[label= \"-\"]");$$=node;}
-	|	MUL {node_t* node  = makenode("[label= \"*\"]");$$=node;}
-	|	DIV {node_t* node  = makenode("[label= \"/\"]");$$=node;}
-	|   LSHIFT {node_t* node  = makenode("[label= \"<<\"]");$$=node;}
-	|   RSHIFT {node_t* node  = makenode("[label= \">>\"]");$$=node;}
-	|	BAND {node_t* node  = makenode("[label= \"&&\"]");$$=node;}
-	|	BOR {node_t* node  = makenode("[label= \"||\"]");$$=node;}
+		PLUS {$$ = makenode("[label= \"+\"]");}
+	|   MOINS {$$ = makenode("[label= \"-\"]");}
+	|	MUL {$$ = makenode("[label= \"*\"]");}
+	|	DIV {$$ = makenode("[label= \"/\"]");}
+	|   LSHIFT {$$ = makenode("[label= \"<<\"]");}
+	|   RSHIFT {$$ = makenode("[label= \">>\"]");}
+	|	BAND {$$ = makenode("[label= \"&\"]");}
+	|	BOR {$$ = makenode("[label= \"|\"]");}
 ;
 binary_rel	:	
-		LAND
-	|	LOR
+		LAND { $$ = makenode("[label= \"&&\"]"); }
+	|	LOR { $$ = makenode("[label= \"||\"]"); }
 ;
 binary_comp	:	
-		LT
-	|	GT
-	|	GEQ
-	|	LEQ
-	|	EQ
-	|	NEQ
+		LT { $$ = makenode("[label= \"<\"]"); }
+	|	GT { $$ = makenode("[label= \">\"]"); }
+	|	GEQ { $$ = makenode("[label= \">=\"]"); }
+	|	LEQ { $$ = makenode("[label= \"<=\"]"); }
+	|	EQ { $$ = makenode("[label= \"==\"]"); }
+	|	NEQ { $$ = makenode("[label= \"!=\"]"); }
 ;
 %%
 
