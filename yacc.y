@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "compi.h"
+int yylex();
+int yyerror(char* s) {
+	fprintf(stderr, "%s\n", s);
+}
 
 
 %}
@@ -156,9 +160,7 @@ binary_comp	:
 
 int yywrap() {}
 
-int yyerror(char* s) {
-	fprintf(stderr, "%s\n", s);
-}
+
 
 int lastlabel = 0;
 
