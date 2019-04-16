@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include "compi.h"
 
+list_t* listprogramme;
 
 %}
 %union {
-struct node_t *node;
-struct list_t *list;
+struct _node_t *node;
+struct _list_t *list;
 }
 
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
@@ -24,18 +25,21 @@ struct list_t *list;
 %left OP
 %left REL
 
+%type <list> liste_fonctions
+%type <node> fonction
+
 %start programme
 %%
 programme	:	
-		liste_declarations liste_fonctions
+		liste_declarations liste_fonctions { listprogramme = $2; }
 ;
 liste_declarations	:	
 		liste_declarations declaration 
 	|	
 ;
 liste_fonctions	:	
-		liste_fonctions fonction
-|               fonction
+		liste_fonctions fonction { $$ = cons($2, $1); }
+|               fonction { $$ = cons($1, NULL); }
 ;
 declaration	:	
 		type liste_declarateurs ';'
@@ -49,8 +53,8 @@ declarateur	:
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
-	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
+		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { $$ = makenode("[shape=invtrapezium color=blue]"); }
+	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' { $$ = NULL; }
 ;
 type	:	
 		VOID
@@ -211,23 +215,11 @@ void printlist(list_t* list) {
 int main() {
 	int res = yyparse();
 	if (res != 0) return res;
-	
-	node_t* a = makenode("[label=\"a\"]");
-	node_t* b = makenode("[label=\"b\"]");
-	node_t* c = makenode("[label=\"c\"]");
-	node_t* d = makenode("[label=\"d\"]");
-	node_t* e = makenode("[label=\"e\"]");
-	
-	a->child = b;
-	b->child = d;
-	b->right = c;
-
-	list_t* l = cons(a, cons(e, NULL));
 
 	printf("digraph generated {\n");
-	printlist(l);
+	printlist(listprogramme);
 	printf("}\n");
-	freelist(l);
+	freelist(listprogramme);
 
 	return res;
 }
