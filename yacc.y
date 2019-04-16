@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration
 %type <nom> type
 
 %start programme
@@ -89,7 +89,7 @@ liste_instructions :
 	| { $$ = NULL; }
 ;
 instruction	:	
-		iteration { $$ = makenode(""); }
+		iteration { $$ = $1; }
 	|	selection { $$ = $1; }
 	|	saut { $$ = $1; }
 	|	affectation ';' { $$ = $1; }
@@ -97,8 +97,18 @@ instruction	:
 	|	appel { $$ = $1; }
 ;
 iteration	:	
-		FOR '(' affectation ';' condition ';' affectation ')' instruction
-	|	WHILE '(' condition ')' instruction
+		FOR '(' affectation ';' condition ';' affectation ')' instruction {
+$$ = makenode("[label=\"FOR\"]");
+$3->right = $5;
+$5->right = $7;
+$7->right = $9;
+$$->child = $3;
+}
+	|	WHILE '(' condition ')' instruction {
+$$ = makenode("[label=\"WHILE\"]");
+$3->right = $5;
+$$->child = $3;
+}
 ;
 selection	:	
 		IF '(' condition ')' instruction %prec THEN {
