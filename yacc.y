@@ -139,9 +139,11 @@ asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer); }
 expression	:	
 		'(' expression ')' { $$ = makenode(""); }
 	|	expression binary_op expression %prec OP { $$ = makenode(""); }
-	|	MOINS expression  { $$ = makenode(""); }
+	|	MOINS expression  { node_t* node_minus = makenode("[label= \"-\"]");
+        node_minus->child=$2;
+        $$ = node_minus; }
 	|	CONSTANTE {char* buffer = NULL;
-asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer);  }
+        asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer);  }
 	|	variable { $$ = makenode(""); }
 	|	IDENTIFICATEUR '(' liste_expressions ')' { $$ = makenode(""); }
 ;
