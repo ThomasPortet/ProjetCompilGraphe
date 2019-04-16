@@ -6,6 +6,7 @@ C                       "/*"((\*+[^/*])|([^*]))*\**"*/"
 %{
 #include <stdio.h>
 #include "y.tab.h"
+#include "compi.h"
 
 
 /* Ne gère pas les commentaires. A rajouter */

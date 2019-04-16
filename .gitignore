@@ -2,4 +2,5 @@
 *.yy*
 executable
 y.tab.*
+*.pdf
 

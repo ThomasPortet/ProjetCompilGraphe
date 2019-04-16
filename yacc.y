@@ -1,10 +1,18 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "compi.h"
+
+
 %}
+%union {
+struct node_t *node;
+}
+
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
 %token BREAK RETURN PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
 %token GEQ LEQ EQ NEQ NOT EXTERN
+
 %left PLUS MOINS
 %left MUL DIV
 %left LSHIFT RSHIFT
@@ -14,10 +22,11 @@
 %nonassoc ELSE
 %left OP
 %left REL
+
 %start programme
 %%
 programme	:	
-		liste_declarations liste_fonctions { printf("Programme!\n"); }
+		liste_declarations liste_fonctions
 ;
 liste_declarations	:	
 		liste_declarations declaration 
@@ -35,12 +44,14 @@ liste_declarateurs	:
 	|	declarateur
 ;
 declarateur	:	
-		IDENTIFICATEUR { printf("Declarateur - Identificateur!\n"); }
+		IDENTIFICATEUR
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { printf("Fonction!\n"); }
-	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' { printf("Fonction externe!\n"); }
+		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' {
+printf("%d [label=\"func, void\" shape=invtrapezium color=blue];\n", nextlabel());
+}
+	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
 ;
 type	:	
 		VOID
@@ -70,8 +81,8 @@ instruction	:
 	|	appel
 ;
 iteration	:	
-		FOR '(' affectation ';' condition ';' affectation ')' instruction { printf("For!\n"); }
-	|	WHILE '(' condition ')' instruction { printf("While!\n"); }
+		FOR '(' affectation ';' condition ';' affectation ')' instruction
+	|	WHILE '(' condition ')' instruction
 ;
 selection	:	
 		IF '(' condition ')' instruction %prec THEN
@@ -86,24 +97,24 @@ saut	:
 	|	RETURN expression ';'
 ;
 affectation	:	
-		variable '=' expression { printf("Affectation!\n"); }
+		variable '=' expression
 ;
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
 ;
 appel	:	
-		IDENTIFICATEUR '(' liste_expressions ')' ';' { printf("Appel de fonction!\n"); }
+		IDENTIFICATEUR '(' liste_expressions ')' ';'
 ;
 variable	:	
-		IDENTIFICATEUR { printf("Variable - Identificateur!\n"); }
+		IDENTIFICATEUR
 	|	variable '[' expression ']'
 ;
 expression	:	
 		'(' expression ')'
-	|	expression binary_op expression %prec OP { printf("Expression - Operateur binaire!\n"); }
+	|	expression binary_op expression %prec OP
 	|	MOINS expression
-	|	CONSTANTE { printf("Expression - Constante!\n"); }
-	|	variable { printf("Expression - Variable!\n"); }
+	|	CONSTANTE
+	|	variable
 	|	IDENTIFICATEUR '(' liste_expressions ')'
 ;
 liste_expressions	:	
@@ -150,6 +161,32 @@ int yyerror(char* s) {
 	fprintf(stderr, "%s\n", s);
 }
 
+int lastlabel = 0;
+
+int nextlabel() {
+	return lastlabel++;
+}
+
+node_t* makenode(char* carac) {
+	node_t *node;
+	node = (node_t*) malloc(sizeof(node_t));
+	node->label = nextlabel();
+	return node;
+}
+
+void freenode(node_t* node) {
+	if (node == NULL) return;
+	freenode(node->child);
+	freenode(node->right);
+	free(node);
+}
+
 int main() {
-	return yyparse();
+	int res = yyparse();
+	if (res != 0) return res;
+	
+	printf("digraph generated {\n");
+	printf("}\n");
+
+	return res;
 }
