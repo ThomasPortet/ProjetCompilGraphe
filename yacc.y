@@ -7,6 +7,7 @@
 %}
 %union {
 struct node_t *node;
+struct list_t *list;
 }
 
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
@@ -189,22 +190,44 @@ void printnode(node_t* node) {
 	}
 }
 
+list_t* cons(node_t* node, list_t* list) {
+	list_t *newlist;
+	newlist = (list_t*) malloc(sizeof(list_t));
+	newlist->val = node;
+	newlist->next = list;
+	return newlist;
+}
+void freelist(list_t* list) {
+	if (list == NULL) return;
+	freelist(list->next);
+	free(list);
+}
+void printlist(list_t* list) {
+	if (list == NULL) return;
+	printnode(list->val);
+	printlist(list->next);
+}
+
 int main() {
 	int res = yyparse();
 	if (res != 0) return res;
 	
-	node_t* a = makenode("");
-	node_t* b = makenode("");
-	node_t* c = makenode("");
-	node_t* d = makenode("");
+	node_t* a = makenode("[label=\"a\"]");
+	node_t* b = makenode("[label=\"b\"]");
+	node_t* c = makenode("[label=\"c\"]");
+	node_t* d = makenode("[label=\"d\"]");
+	node_t* e = makenode("[label=\"e\"]");
+	
 	a->child = b;
 	b->child = d;
 	b->right = c;
 
+	list_t* l = cons(a, cons(e, NULL));
+
 	printf("digraph generated {\n");
-	printnode(a);
+	printlist(l);
 	printf("}\n");
-	freenode(a);
+	freelist(l);
 
 	return res;
 }

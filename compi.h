@@ -5,8 +5,17 @@ typedef struct _node_t {
 	struct _node_t *right;
 } node_t;
 
+typedef struct _list_t {
+	node_t *val;
+	struct _list_t *next;
+} list_t;
+
 int nextlabel();
 
 node_t* makenode(char* carac);
 void freenode(node_t* node);
 void printnode(node_t* node);
+
+list_t* cons(node_t* node, list_t* list);
+void freelist(list_t* list);
+void printlist(list_t* list);
