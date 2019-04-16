@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut
+%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne
 %type <nom> type
 
 %start programme
@@ -94,7 +94,7 @@ instruction	:
 	|	saut { $$ = $1; }
 	|	affectation ';' { $$ = $1; }
 	|	bloc { $$ = $1; }
-	|	appel { $$ = makenode(""); }
+	|	appel { $$ = $1; }
 ;
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction
@@ -132,7 +132,12 @@ $$ = node;
 }
 ;
 appel	:	
-		IDENTIFICATEUR '(' liste_expressions ')' ';' 
+		IDENTIFICATEUR '(' liste_expressions ')' ';' {
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\" shape=septagon]", $1);
+$$ = makenode(buffer);
+$$->child = reverse($3);
+}
 ;
 variable	:	
 		IDENTIFICATEUR {
@@ -143,7 +148,7 @@ $$ = makenode(buffer);
 	|	variable '[' expression ']' { $$ = makenode(""); }
 ;
 expression	:	
-		'(' expression ')' { $$ = makenode(""); }
+		'(' expression ')' { $$ = $2; }
 	|	expression binary_op expression %prec OP {
     node_t* node_b = $2; 
     node_t* node_l = $1;
@@ -155,16 +160,16 @@ expression	:
         $$ = node_minus; }
 	|	CONSTANTE {char* buffer = NULL;
         asprintf(&buffer, "[label=\"%s\"]", $1); $$ = makenode(buffer);  }
-	|	variable { $$ = makenode(""); }
+	|	variable { $$ = $1; }
 	|	IDENTIFICATEUR '(' liste_expressions ')' { $$ = makenode(""); }
 ;
 liste_expressions	:	
-		liste_expressions_interne
-	|
+		liste_expressions_interne { $$ = $1; }
+	| { $$ = NULL; }
 ;
 liste_expressions_interne	:	
-		liste_expressions_interne ',' expression
-	|	expression
+		liste_expressions_interne ',' expression { $3->right = $1; $$ = $3; }
+	|	expression { $$ = $1; }
 ;
 condition	:	
 		NOT '(' condition ')'
