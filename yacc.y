@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction
+%type <node> fonction liste_instructions instruction bloc
 %type <nom> type
 
 %start programme
@@ -65,6 +65,7 @@ fonction	:
 char* buffer = NULL;
 asprintf(&buffer, "[label=\"%s, %s\" shape=invtrapezium color=blue]", $2, $1);
 $$ = makenode(buffer);
+$$->child = $6;
 }
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' { $$ = NULL; }
 ;
@@ -84,16 +85,16 @@ parm	:
 		INT IDENTIFICATEUR
 ;
 liste_instructions :	
-		liste_instructions instruction
-	|
+		liste_instructions instruction { $2->right = $1; $$ = $2; }
+	| { $$ = NULL; }
 ;
 instruction	:	
-		iteration
-	|	selection
-	|	saut
-	|	affectation ';'
-	|	bloc
-	|	appel
+		iteration { $$ = makenode(""); }
+	|	selection { $$ = makenode(""); }
+	|	saut { $$ = makenode(""); }
+	|	affectation ';' { $$ = makenode(""); }
+	|	bloc { $$ = $1; }
+	|	appel { $$ = makenode(""); }
 ;
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction
@@ -115,7 +116,11 @@ affectation	:
 		variable '=' expression
 ;
 bloc	:	
-		'{' liste_declarations liste_instructions '}'
+		'{' liste_declarations liste_instructions '}' {
+node_t* node = makenode("[label=\"BLOC\"]");
+node->child = $3;
+$$ = node;
+}
 ;
 appel	:	
 		IDENTIFICATEUR '(' liste_expressions ')' ';'
