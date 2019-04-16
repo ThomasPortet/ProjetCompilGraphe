@@ -16,6 +16,8 @@ node_t* makenode(char* carac);
 void freenode(node_t* node);
 void printnode(node_t* node);
 
+node_t* reverse(node_t* node);
+
 list_t* cons(node_t* node, list_t* list);
 void freelist(list_t* list);
 void printlist(list_t* list);

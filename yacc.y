@@ -124,7 +124,7 @@ affectation	:
 bloc	:	
 		'{' liste_declarations liste_instructions '}' {
 node_t* node = makenode("[label=\"BLOC\"]");
-node->child = $3;
+node->child = reverse($3);
 $$ = node;
 }
 ;
@@ -194,6 +194,8 @@ int yywrap() {}
 
 
 
+//Noeuds
+
 int lastlabel = 0;
 
 int nextlabel() {
@@ -224,6 +226,22 @@ void printnode(node_t* node) {
 		printf("%d -> %d\n", node->label, n->label);
 	}
 }
+
+node_t* reverse_(node_t* node, node_t* next) {
+	if (next == NULL) return node;
+	node_t* ret = reverse_(next, next->right);
+	next->right = node;
+	return ret;
+}
+
+node_t* reverse(node_t* node) {
+	if (node == NULL) return NULL;
+	node_t* ret = reverse_(node, node->right);
+	node->right = NULL;
+	return ret;
+}
+
+//Liste
 
 list_t* cons(node_t* node, list_t* list) {
 	list_t *newlist;
