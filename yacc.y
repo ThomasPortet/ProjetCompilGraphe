@@ -61,7 +61,7 @@ declarateur	:
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { 
+		type IDENTIFICATEUR '(' liste_parms ')' bloc { 
 char* buffer = NULL;
 asprintf(&buffer, "[label=\"%s, %s\" shape=invtrapezium color=blue]", $2, $1);
 $$ = makenode(buffer);
