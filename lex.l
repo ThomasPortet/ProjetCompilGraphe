@@ -28,7 +28,7 @@ C                       "/*"((\*+[^/*])|([^*]))*\**"*/"
 "void"                  { return VOID; }
 "while"                 { return WHILE; }
 
-{L}({L}|{D})*           { return IDENTIFICATEUR; }
+{L}({L}|{D})*           { yylval.nom = strdup(yytext); return IDENTIFICATEUR; }
 
 {D}+                    { return CONSTANTE; }
 

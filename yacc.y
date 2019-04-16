@@ -1,4 +1,5 @@
 %{
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include "compi.h"
@@ -11,11 +12,13 @@ list_t* listprogramme;
 
 %}
 %union {
+char *nom;
 struct _node_t *node;
 struct _list_t *list;
 }
 
-%token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
+%token <nom> IDENTIFICATEUR CONSTANTE
+%token VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
 %token BREAK RETURN PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
 %token GEQ LEQ EQ NEQ NOT EXTERN
 
@@ -31,6 +34,7 @@ struct _list_t *list;
 
 %type <list> liste_fonctions
 %type <node> fonction
+%type <nom> type
 
 %start programme
 %%
@@ -57,12 +61,16 @@ declarateur	:
 	|	declarateur '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { $$ = makenode("[shape=invtrapezium color=blue]"); }
+		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}' { 
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s, %s\" shape=invtrapezium color=blue]", $2, $1);
+$$ = makenode(buffer);
+}
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';' { $$ = NULL; }
 ;
 type	:	
-		VOID
-	|	INT
+		VOID { $$ = "void"; }
+	|	INT { $$ = "int"; }
 ;
 liste_parms	:	
 		liste_parms_interne
@@ -184,6 +192,7 @@ void freenode(node_t* node) {
 	if (node == NULL) return;
 	freenode(node->child);
 	freenode(node->right);
+	free(node->carac);
 	free(node);
 }
 
