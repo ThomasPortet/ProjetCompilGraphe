@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable variable_tableau binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration binary_rel binary_comp
+%type <node> fonction liste_instructions instruction bloc expression affectation variable variable_tableau binary_op saut appel liste_expressions liste_expressions_interne condition selection selection_switch iteration binary_rel binary_comp
 %type <nom> type
 
 %start programme
@@ -122,19 +122,27 @@ $3->right = $5;
 $5->right = $7;
 $$->child = $3;
 }
-	|	SWITCH '(' expression ')' instruction {
-//TODO
+	|	SWITCH '(' expression ')' '{' selection_switch '}' {
 $$ = makenode("[label=\"SWITCH\"]");
-$$->child = $5;
+$$->child = reverse($6);
 }
-	|	CASE CONSTANTE ':' instruction {
-//TODO
-$$ = $4;
+;
+selection_switch	:
+		selection_switch CASE CONSTANTE ':' liste_instructions {
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"CASE %s\"]", $3);
+node_t* node = makenode(buffer);
+node->right = $1;
+node->child = reverse($5);
+$$ = node;
 }
-	|	DEFAULT ':' instruction {
-//TODO
-$$ = $3;
+	|	selection_switch DEFAULT ':' liste_instructions {
+node_t* node = makenode("[label=\"DEFAULT\"]");
+node->right = $1;
+node->child = reverse($4);
+$$ = node;
 }
+	|	{ $$ = NULL; }
 ;
 saut	:	
 		BREAK ';' { $$ = makenode("[label=\"BREAK\" shape=box]"); }
