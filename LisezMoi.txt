@@ -1,0 +1,19 @@
+Groupe:
+
+- Thomas Portet
+- Aymeric Picard Marchetto
+
+Compiler le projet:
+
+1. Se placer à l'emplacement des sources
+2. Exécuter ./build.sh
+  (si besoin, faire les commandes de build.sh dans l'ordre à la main)
+3. L'éxécutable produit se nomme executable et se trouve au même emplacement
+
+NOTE: le projet utilise asprintf, une fonction fournie par GNU.
+
+Générer un fichier dot:
+
+1. Se placer à l'emplacement de l'éxécutable
+2. Exécuter ./executable < fichierdentrée > fichierdesortie
+  (le programme lit sur l'entrée standard et écrit le fichier sur la sortie standard, comme les commandes UNIX)
