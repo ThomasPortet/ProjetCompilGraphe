@@ -33,7 +33,7 @@ struct _list_t *list;
 %left REL
 
 %type <list> liste_fonctions
-%type <node> fonction liste_instructions instruction bloc expression affectation variable binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration binary_rel binary_comp
+%type <node> fonction liste_instructions instruction bloc expression affectation variable variable_tableau binary_op saut appel liste_expressions liste_expressions_interne condition selection iteration binary_rel binary_comp
 %type <nom> type
 
 %start programme
@@ -164,7 +164,19 @@ char* buffer = NULL;
 asprintf(&buffer, "[label=\"%s\"]", $1);
 $$ = makenode(buffer);
 }
-	|	variable '[' expression ']' { $$ = makenode(""); }
+	|	variable_tableau '[' expression ']' {
+$$ = makenode("[label=\"TAB\"]");
+$3->right = $1;
+$$->child = reverse($3);
+}
+;
+variable_tableau	:
+		IDENTIFICATEUR {
+char* buffer = NULL;
+asprintf(&buffer, "[label=\"%s\"]", $1);
+$$ = makenode(buffer);
+}
+	|	variable_tableau '[' expression ']' { $3->right = $1; $$ = $3; }
 ;
 expression	:	
 		'(' expression ')' { $$ = $2; }
