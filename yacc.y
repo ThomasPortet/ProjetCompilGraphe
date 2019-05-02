@@ -122,9 +122,19 @@ $3->right = $5;
 $5->right = $7;
 $$->child = $3;
 }
-	|	SWITCH '(' expression ')' instruction { $$ = makenode(""); }
-	|	CASE CONSTANTE ':' instruction { $$ = makenode(""); }
-	|	DEFAULT ':' instruction { $$ = makenode(""); }
+	|	SWITCH '(' expression ')' instruction {
+//TODO
+$$ = makenode("[label=\"SWITCH\"]");
+$$->child = $5;
+}
+	|	CASE CONSTANTE ':' instruction {
+//TODO
+$$ = $4;
+}
+	|	DEFAULT ':' instruction {
+//TODO
+$$ = $3;
+}
 ;
 saut	:	
 		BREAK ';' { $$ = makenode("[label=\"BREAK\" shape=box]"); }
