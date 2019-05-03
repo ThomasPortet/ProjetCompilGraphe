@@ -130,7 +130,7 @@ $$->child = reverse($6);
 selection_switch	:
 		selection_switch CASE CONSTANTE ':' liste_instructions {
 char* buffer = NULL;
-asprintf(&buffer, "[label=\"CASE %s\"]", $3);
+asprintf(&buffer, "[label=\"CASE\"]");//"[label=\"CASE %s\"]", $3 pour avoir les numéros sur les cases
 node_t* node = makenode(buffer);
 node->right = $1;
 node->child = reverse($5);
