@@ -198,12 +198,7 @@ $$ = makenode(buffer);
 ;
 expression	:	
 		'(' expression ')' { $$ = $2; }
-	|	expression binary_op expression %prec OP {
-    node_t* node_b = $2; 
-    node_t* node_l = $1;
-    node_b->child=node_l;
-    node_l->right=$3;
-    $$=node_b;}
+	|	binary_op %prec OP { $$ = $1; }
 	|	MOINS expression  { node_t* node_minus = makenode("[label= \"-\"]");
         node_minus->child=$2;
         $$ = node_minus; }
@@ -232,14 +227,54 @@ condition	:
 	|	expression binary_comp expression { $1->right = $3; $2->child = $1; $$ = $2; }
 ;
 binary_op	:	
-		PLUS {$$ = makenode("[label= \"+\"]");}
-	|   MOINS {$$ = makenode("[label= \"-\"]");}
-	|	MUL {$$ = makenode("[label= \"*\"]");}
-	|	DIV {$$ = makenode("[label= \"/\"]");}
-	|   LSHIFT {$$ = makenode("[label= \"<<\"]");}
-	|   RSHIFT {$$ = makenode("[label= \">>\"]");}
-	|	BAND {$$ = makenode("[label= \"&\"]");}
-	|	BOR {$$ = makenode("[label= \"|\"]");}
+		expression PLUS expression %prec PLUS {
+    node_t* node_b = makenode("[label= \"+\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|   expression MOINS expression %prec MOINS {
+    node_t* node_b = makenode("[label= \"-\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|	expression MUL expression %prec MUL {
+    node_t* node_b = makenode("[label= \"*\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|	expression DIV expression %prec DIV {
+    node_t* node_b = makenode("[label= \"/\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|   expression LSHIFT expression %prec LSHIFT {
+    node_t* node_b = makenode("[label= \"<<\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|   expression RSHIFT expression %prec RSHIFT {
+    node_t* node_b = makenode("[label= \">>\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|	expression BAND expression %prec BAND {
+    node_t* node_b = makenode("[label= \"&\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
+	|	expression BOR expression %prec BOR {
+    node_t* node_b = makenode("[label= \"|\"]"); 
+    node_t* node_l = $1;
+    node_b->child=node_l;
+    node_l->right=$3;
+    $$=node_b;}
 ;
 binary_rel	:	
 		LAND { $$ = makenode("[label= \"&&\"]"); }
