@@ -357,8 +357,8 @@ void freelist(list_t* list) {
 }
 void printlist(list_t* list) {
 	if (list == NULL) return;
-	printnode(list->val);
 	printlist(list->next);
+	printnode(list->val);
 }
 
 int main() {
