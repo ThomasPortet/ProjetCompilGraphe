@@ -21,7 +21,7 @@ Générer un fichier dot:
   (le programme lit sur l'entrée standard et écrit le fichier sur la sortie standard, comme les commandes UNIX)
 
 Pour avoir directement le graph en pdf, utiliser:
-	./executable < fichierdentrée | dot -Tpf -o fichierdesortie.pdf
+	./executable < fichierdentrée | dot -Tpdf -o fichierdesortie.pdf
 
 Par exemple pour générer un graph pour le test add.c:
 	./executable < tests/add.c | dot -Tpdf -o add.c.pdf
