@@ -22,3 +22,6 @@ Générer un fichier dot:
 
 Pour avoir directement le graph en pdf, utiliser:
 	./executable < fichierdentrée | dot -Tpf -o fichierdesortie.pdf
+
+Par exemple pour générer un graph pour le test add.c:
+	./executable < tests/add.c | dot -Tpdf -o add.c.pdf
